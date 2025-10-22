@@ -1,7 +1,15 @@
 import axios from 'axios';
 
-// Use environment variable or default to localhost:5000
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Determine if we're in production (GitHub Pages) or development
+const isProduction = window.location.hostname !== 'localhost';
+
+// In production, we'll use the server deployed to a hosting service
+// For now, we'll still use localhost but you should change this to your deployed server URL
+const API_URL = isProduction 
+  ? 'https://your-server-url.com/api'  // Replace this with your actual deployed server URL
+  : 'http://localhost:5000/api';
+
+console.log('Environment:', isProduction ? 'Production' : 'Development');
 console.log('API URL:', API_URL);
 
 const axiosConfig = {
