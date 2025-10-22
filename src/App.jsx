@@ -15,10 +15,11 @@ function App() {
 
   useEffect(() => {
     // Handle redirect from 404.html
-    const redirect = sessionStorage.getItem('redirect');
-    if (redirect) {
-      sessionStorage.removeItem('redirect');
-      window.history.replaceState(null, null, redirect);
+    const storedPath = sessionStorage.getItem('spa-path');
+    if (storedPath) {
+      sessionStorage.removeItem('spa-path');
+      const basePath = '/dartstatic_brela';
+      window.history.replaceState(null, null, basePath + storedPath);
     }
   }, []);
 

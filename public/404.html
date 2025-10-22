@@ -2,12 +2,29 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redirecting...</title>
-  <script>
-    const path = window.location.pathname;
-    const baseUrl = '/dartstatic_brela/';
-    sessionStorage.setItem('redirect', path.replace(baseUrl, ''));
-    window.location.href = baseUrl;
+  <title>Single Page Apps for GitHub Pages</title>
+  <script type="text/javascript">
+    // SPA for GitHub Pages
+    (function(l) {
+      // Segments of the path after the base URL
+      const segments = l.pathname.split('/dartstatic_brela/')[1];
+      
+      // Base URL
+      const baseUrl = '/dartstatic_brela/';
+      
+      // Store the path for restoration after redirect
+      if (segments) {
+        sessionStorage.setItem('spa-path', '/' + segments);
+      }
+      
+      // Redirect to the base URL
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        baseUrl +
+        l.search +
+        l.hash
+      );
+    }(window.location))
   </script>
 </head>
 <body>
