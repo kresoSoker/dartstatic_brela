@@ -1,15 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 import './App.css'
 
+// Components
+import Login from './components/Login'
+import Navigation from './components/Navigation'
+import Games from './components/Games'
+import AddGame from './components/AddGame'
+import Statistics from './components/Statistics'
+import PlayerStatistics from './components/PlayerStatistics'
+
 function App() {
+  const [username, setUsername] = useState(localStorage.getItem('username') || '')
+
+  useEffect(() => {
+    if (username) {
+      localStorage.setItem('username', username)
+    }
+  }, [username])
+
+  if (!username) {
+    return <Login onLogin={setUsername} />
+  }
+
   return (
-    <div style={{ textAlign: "center", marginTop: "20vh" }}>
-      <h1>Hello World 👋</h1>
-      <p>This is my first React app deployed on GitHub Pages!</p>
-    </div>
-  );
+    <Router basename="/dartstatic_brela">
+      <div className="app-container">
+        <Navigation username={username} onLogout={() => setUsername('')} />
+        <main className="main-content">
+          <Routes>
+            <Route path="/games" element={<Games username={username} />} />
+            <Route path="/add-game" element={<AddGame username={username} />} />
+            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/player-statistics" element={<PlayerStatistics />} />
+            <Route path="/" element={<Navigate to="/games" replace />} />
+            <Route path="*" element={<Navigate to="/games" replace />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  )
 }
 
-export default App;
+export default App

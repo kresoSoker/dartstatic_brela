@@ -1,0 +1,84 @@
+{
+  "games": [
+    {
+      "date": "2025-10-22T14:37:08.908Z",
+      "createdAt": "2025-10-22T14:37:08.923Z",
+      "players": [
+        "kresimir.b",
+        "marino.j"
+      ],
+      "winner": "kresimir.b",
+      "score": "5-2",
+      "oneEighties": {
+        "kresimir.b": 1,
+        "marino.j": 0
+      },
+      "addedBy": "kresimir.b",
+      "id": "1761143828923"
+    },
+    {
+      "date": "2025-10-22T14:37:43.606Z",
+      "createdAt": "2025-10-22T14:37:43.610Z",
+      "players": [
+        "ante.c",
+        "frane.g"
+      ],
+      "winner": "ante.c",
+      "score": "6-1",
+      "oneEighties": {
+        "ante.c": 1,
+        "frane.g": 0
+      },
+      "addedBy": "kresimir.b",
+      "id": "1761143863610"
+    },
+    {
+      "date": "2025-10-22T14:38:07.168Z",
+      "createdAt": "2025-10-22T14:38:07.172Z",
+      "players": [
+        "karlo.m",
+        "dalibor.m"
+      ],
+      "winner": "karlo.m",
+      "score": "6-4",
+      "oneEighties": {
+        "karlo.m": 1,
+        "dalibor.m": 1
+      },
+      "addedBy": "kresimir.b",
+      "id": "1761143887172"
+    }
+  ],
+  "stats": {
+    "kresimir.b": {
+      "wins": 1,
+      "losses": 0,
+      "oneEighties": 1
+    },
+    "marino.j": {
+      "wins": 0,
+      "losses": 1,
+      "oneEighties": 0
+    },
+    "ante.c": {
+      "wins": 1,
+      "losses": 0,
+      "oneEighties": 1
+    },
+    "frane.g": {
+      "wins": 0,
+      "losses": 1,
+      "oneEighties": 0
+    },
+    "karlo.m": {
+      "wins": 1,
+      "losses": 0,
+      "oneEighties": 1
+    },
+    "dalibor.m": {
+      "wins": 0,
+      "losses": 1,
+      "oneEighties": 1
+    }
+  }
+}
