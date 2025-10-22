@@ -6,17 +6,51 @@
 
 .main-content {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
+  -webkit-text-size-adjust: 100%;
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* Mobile-friendly styles */
+@media (max-width: 600px) {
+  .main-content {
+    padding: 0.5rem;
+  }
+
+  /* Make tables responsive */
+  .MuiTable-root {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Adjust spacing for mobile */
+  .MuiPaper-root {
+    padding: 12px !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Adjust form controls for mobile */
+  .MuiFormControl-root {
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Adjust button sizes */
+  .MuiButton-root {
+    padding: 8px 16px !important;
+    font-size: 0.875rem !important;
+  }
 }
