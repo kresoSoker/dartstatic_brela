@@ -14,6 +14,15 @@ function App() {
   const [username, setUsername] = useState(localStorage.getItem('username') || '')
 
   useEffect(() => {
+    // Handle redirect from 404.html
+    const redirect = sessionStorage.getItem('redirect');
+    if (redirect) {
+      sessionStorage.removeItem('redirect');
+      window.history.replaceState(null, null, redirect);
+    }
+  }, []);
+
+  useEffect(() => {
     if (username) {
       localStorage.setItem('username', username)
     }
@@ -34,6 +43,7 @@ function App() {
             <Route path="/statistics" element={<Statistics />} />
             <Route path="/player-statistics" element={<PlayerStatistics />} />
             <Route path="/" element={<Navigate to="/games" replace />} />
+            <Route path="/index.html" element={<Navigate to="/games" replace />} />
             <Route path="*" element={<Navigate to="/games" replace />} />
           </Routes>
         </main>
