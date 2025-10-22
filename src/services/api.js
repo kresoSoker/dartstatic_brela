@@ -3,10 +3,9 @@ import axios from 'axios';
 // Determine if we're in production (GitHub Pages) or development
 const isProduction = window.location.hostname !== 'localhost';
 
-// In production, we'll use the server deployed to a hosting service
-// For now, we'll still use localhost but you should change this to your deployed server URL
+// Use the Render.com backend in production, localhost in development
 const API_URL = isProduction 
-  ? 'https://your-server-url.com/api'  // Replace this with your actual deployed server URL
+  ? 'https://dartstatic-brela-backend.onrender.com/api'
   : 'http://localhost:5000/api';
 
 console.log('Environment:', isProduction ? 'Production' : 'Development');
