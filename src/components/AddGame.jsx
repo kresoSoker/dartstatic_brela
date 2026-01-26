@@ -121,10 +121,10 @@ function AddGame({ username }) {
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" component="h2" gutterBottom>
-          {editGame ? 'Izmjeni meć' : 'Dodaj meč'}
-        </Typography>
+      <Typography variant="h4" component="h2" gutterBottom sx={{ color: '#fff !important', textAlign: 'center', mb: 2 }}>
+        {editGame ? 'Izmjeni meć' : 'Dodaj meč'}
+      </Typography>
+      <Paper sx={{ p: 4, backgroundColor: '#fafbaa' }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}

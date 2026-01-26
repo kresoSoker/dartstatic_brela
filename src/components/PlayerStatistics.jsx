@@ -92,24 +92,34 @@ function PlayerStatistics() {
         };
       })
       .filter(stat => stat.total > 0)
-      .sort((a, b) => b.total - a.total);
+      .sort((a, b) => {
+        // Sort by win rate (percentage) descending
+        const aRate = parseFloat(a.winRate);
+        const bRate = parseFloat(b.winRate);
+        if (bRate !== aRate) {
+          return bRate - aRate;
+        }
+        // If same percentage, sort by total games
+        return b.total - a.total;
+      });
   };
 
   const playerStats = calculateStats();
 
   return (
     <div>
-      <Typography variant="h4" component="h2" gutterBottom sx={{ color: '#fff !important' }}>
+      <Typography variant="h4" component="h2" gutterBottom sx={{ color: '#fff !important', textAlign: 'center' }}>
         Igrač protiv igrača statistika
       </Typography>
 
       <Box sx={{ maxWidth: 300, mb: 4 }}>
-        <FormControl fullWidth>
+        <FormControl fullWidth sx={{ backgroundColor: '#fafbaa', borderRadius: 1 }}>
           <InputLabel>Odaberi igrača</InputLabel>
           <Select
             value={selectedPlayer}
             label="Odaberi igrača"
             onChange={(e) => setSelectedPlayer(e.target.value)}
+            sx={{ backgroundColor: '#fafbaa' }}
           >
             {players.map((player) => (
               <MenuItem key={player} value={player}>
@@ -131,7 +141,7 @@ function PlayerStatistics() {
           <CircularProgress />
         </Box>
       ) : selectedPlayer && playerStats.length > 0 ? (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ backgroundColor: '#fafbaa' }}>
           <Table>
             <TableHead>
               <TableRow>

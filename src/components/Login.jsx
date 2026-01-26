@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TextField, Button, Box, Typography, Paper, Alert, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import logo from '../assets/logo.png';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -31,18 +32,52 @@ function Login({ onLogin }) {
         height: '100vh',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        background: '#000000',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '80%',
+          height: '80%',
+          backgroundImage: `url(${logo})`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.1,
+          zIndex: 0
+        }
       }}
     >
       <Paper
         elevation={3}
         sx={{
-          p: 4,
-          maxWidth: 400,
-          width: '90%'
+          p: 5,
+          maxWidth: 500,
+          width: '90%',
+          backgroundColor: '#fafbaa',
+          position: 'relative',
+          zIndex: 1
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom textAlign="center">
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+          <img 
+            src={logo} 
+            alt="Logo" 
+            style={{ 
+              width: 120, 
+              height: 120, 
+              borderRadius: '50%', 
+              objectFit: 'cover',
+              border: '3px solid #d0be19'
+            }} 
+          />
+        </Box>
+        <Typography variant="h4" component="h1" gutterBottom textAlign="center" sx={{ fontWeight: 600, color: '#111301' }}>
           Dart Statistics
         </Typography>
         <form onSubmit={handleSubmit}>

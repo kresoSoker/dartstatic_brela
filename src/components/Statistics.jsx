@@ -30,7 +30,7 @@ function Statistics() {
 
   return (
     <div>
-      <Typography variant="h4" component="h2" gutterBottom sx={{ color: '#fff !important' }}>
+      <Typography variant="h4" component="h2" gutterBottom sx={{ color: '#fff !important', textAlign: 'center' }}>
         Statistika igrača
       </Typography>
       <TableContainer component={Paper} sx={{ backgroundColor: '#fafbaa' }}>
@@ -46,11 +46,7 @@ function Statistics() {
           <TableBody>
             {Object.entries(stats)
               .sort(([, a], [, b]) => {
-                // First sort by wins (descending)
-                if (b.wins !== a.wins) {
-                  return b.wins - a.wins;
-                }
-                // If wins are equal, sort by win rate (descending)
+                // Sort by win rate percentage (descending)
                 const aTotal = a.wins + a.losses;
                 const bTotal = b.wins + b.losses;
                 const aWinRate = aTotal > 0 ? (a.wins / aTotal) : 0;
@@ -62,7 +58,10 @@ function Statistics() {
                 if (bTotal !== aTotal) {
                   return bTotal - aTotal;
                 }
-                // If everything is equal, sort alphabetically
+                // If total games equal, sort by wins
+                if (b.wins !== a.wins) {
+                  return b.wins - a.wins;
+                }
                 return 0;
               })
               .map(([player, data], idx) => {
