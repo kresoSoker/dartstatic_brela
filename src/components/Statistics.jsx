@@ -30,18 +30,17 @@ function Statistics() {
 
   return (
     <div>
-      <Typography variant="h4" component="h2" gutterBottom>
-        Player Statistics
+      <Typography variant="h4" component="h2" gutterBottom sx={{ color: '#fff !important' }}>
+        Statistika igrača
       </Typography>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#fafbaa' }}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Player</TableCell>
-              <TableCell align="right">Wins</TableCell>
-              <TableCell align="right">Losses</TableCell>
-              <TableCell align="right">Win Rate</TableCell>
-              <TableCell align="right">180s</TableCell>
+                <TableCell>Igrač</TableCell>
+                <TableCell align="right">%</TableCell>
+                <TableCell align="right">Odigrano</TableCell>
+                <TableCell align="right">Omjer</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -66,21 +65,20 @@ function Statistics() {
                 // If everything is equal, sort alphabetically
                 return 0;
               })
-              .map(([player, data]) => {
+              .map(([player, data], idx) => {
                 const totalGames = data.wins + data.losses;
                 const winRate = totalGames > 0
                   ? ((data.wins / totalGames) * 100).toFixed(1)
                   : '0.0';
-
+                const omjer = `${data.wins}/${data.losses}`;
                 return (
-                  <TableRow key={player}>
+                  <TableRow key={player} sx={{backgroundColor: idx % 2 === 1 ? '#e9e260' : '#fafbaa' }}>
                     <TableCell component="th" scope="row">
                       {player}
                     </TableCell>
-                    <TableCell align="right">{data.wins}</TableCell>
-                    <TableCell align="right">{data.losses}</TableCell>
                     <TableCell align="right">{winRate}%</TableCell>
-                    <TableCell align="right">{data.oneEighties}</TableCell>
+                    <TableCell align="right">{totalGames}</TableCell>
+                    <TableCell align="right">{omjer}</TableCell>
                   </TableRow>
                 );
               })}

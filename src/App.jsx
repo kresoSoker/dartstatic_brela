@@ -29,13 +29,40 @@ function App() {
     }
   }, [username])
 
+  const [initialLoading, setInitialLoading] = useState(false);
+
+  useEffect(() => {
+    if (username) {
+      setInitialLoading(true);
+      // Try to fetch something from the server to trigger wakeup
+      fetch('https://dartstatic-brela-backend.onrender.com/api/players')
+        .then(() => setInitialLoading(false))
+        .catch(() => setInitialLoading(false));
+    }
+  }, [username]);
+
   if (!username) {
-    return <Login onLogin={setUsername} />
+    return <Login onLogin={setUsername} />;
+  }
+
+  if (initialLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <svg width="60" height="60" viewBox="0 0 50 50" style={{ marginBottom: 16 }}>
+            <circle cx="25" cy="25" r="20" stroke="#1976d2" strokeWidth="5" fill="none" strokeDasharray="31.4 31.4" strokeDashoffset="0">
+              <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
+            </circle>
+          </svg>
+          <div style={{ fontSize: '1.2rem', color: '#1976d2' }}>Spajam se sa serverom...<br />Može potrajati i do 3 minute prilikom prvog pokretanja.</div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <Router basename="/dartstatic_brela">
-      <div className="app-container">
+      <div className="app-container" style={{ minHeight: '100vh', background: '#000000' }}>
         <Navigation username={username} onLogout={() => setUsername('')} />
         <main className="main-content">
           <Routes>
@@ -50,7 +77,7 @@ function App() {
         </main>
       </div>
     </Router>
-  )
+  );
 }
 
 export default App

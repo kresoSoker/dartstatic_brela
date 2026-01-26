@@ -80,32 +80,35 @@ function PlayerStatistics() {
 
     // Convert to array and sort by total games
     return Object.entries(stats)
-      .map(([opponent, record]) => ({
-        opponent,
-        ...record,
-        total: record.wins + record.losses,
-        winRate: record.wins + record.losses > 0
-          ? ((record.losses / (record.wins + record.losses)) * 100).toFixed(1)
-          : '0.0'
-      }))
-      .filter(stat => stat.total > 0) // Only show players with games played
-      .sort((a, b) => b.total - a.total); // Sort by most games played
+      .map(([opponent, record]) => {
+        const total = record.wins + record.losses;
+        const winRate = total > 0 ? ((record.losses / total) * 100).toFixed(1) : '0.0';
+        const omjer = `${record.losses}/${record.wins}`;
+        return {
+          opponent,
+          total,
+          winRate,
+          omjer
+        };
+      })
+      .filter(stat => stat.total > 0)
+      .sort((a, b) => b.total - a.total);
   };
 
   const playerStats = calculateStats();
 
   return (
     <div>
-      <Typography variant="h4" component="h2" gutterBottom>
-        Player vs Player Statistics
+      <Typography variant="h4" component="h2" gutterBottom sx={{ color: '#fff !important' }}>
+        Igrač protiv igrača statistika
       </Typography>
 
       <Box sx={{ maxWidth: 300, mb: 4 }}>
         <FormControl fullWidth>
-          <InputLabel>Select Player</InputLabel>
+          <InputLabel>Odaberi igrača</InputLabel>
           <Select
             value={selectedPlayer}
-            label="Select Player"
+            label="Odaberi igrača"
             onChange={(e) => setSelectedPlayer(e.target.value)}
           >
             {players.map((player) => (
@@ -132,23 +135,21 @@ function PlayerStatistics() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Opponent</TableCell>
-                <TableCell align="right">Games Played</TableCell>
-                <TableCell align="right">Wins</TableCell>
-                <TableCell align="right">Losses</TableCell>
-                <TableCell align="right">Win Rate</TableCell>
+                <TableCell>Protivnik</TableCell>
+                <TableCell align="right">%</TableCell>
+                <TableCell align="right">Odigrano</TableCell>
+                <TableCell align="right">Omjer</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {playerStats.map((stat) => (
-                <TableRow key={stat.opponent}>
+              {playerStats.map((stat, idx) => (
+                <TableRow key={stat.opponent} sx={{ backgroundColor: idx % 2 === 1 ? '#e9e260' : '#fafbaa' }}>
                   <TableCell component="th" scope="row">
                     {stat.opponent}
                   </TableCell>
-                  <TableCell align="right">{stat.total}</TableCell>
-                  <TableCell align="right">{stat.wins}</TableCell>
-                  <TableCell align="right">{stat.losses}</TableCell>
                   <TableCell align="right">{stat.winRate}%</TableCell>
+                  <TableCell align="right">{stat.total}</TableCell>
+                  <TableCell align="right">{stat.omjer}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -157,7 +158,7 @@ function PlayerStatistics() {
       ) : selectedPlayer ? (
         <Typography variant="body1">No games played yet.</Typography>
       ) : (
-        <Typography variant="body1">Select a player to see their statistics.</Typography>
+        <Typography variant="body1">Odaberi igrača da vidim omjer sa drugima.</Typography>
       )}
     </div>
   );

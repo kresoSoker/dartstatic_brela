@@ -1,3 +1,18 @@
+@media (max-width: 600px) {
+  .MuiAppBar-root {
+    min-height: 56px !important;
+    width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    box-sizing: border-box;
+  }
+  .MuiToolbar-root {
+    min-height: 56px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    box-sizing: border-box;
+  }
+}
 .app-container {
   min-height: 100vh;
   display: flex;

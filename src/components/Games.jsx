@@ -71,9 +71,9 @@ function Games({ username }) {
         <Typography 
           variant={isMobile ? "h5" : "h4"} 
           component="h2"
-          sx={{ textAlign: isMobile ? 'center' : 'left' }}
+          sx={{ textAlign: isMobile ? 'center' : 'left', color: '#fff !important' }}
         >
-          Game History
+          Povijest mečeva
         </Typography>
         <Button 
           variant="outlined" 
@@ -98,6 +98,7 @@ function Games({ username }) {
       <TableContainer 
         component={Paper}
         sx={{
+          backgroundColor: '#fafbaa',
           '.MuiTableCell-root': {
             px: { xs: 1, sm: 2 },
             py: { xs: 1, sm: 1.5 },
@@ -108,43 +109,44 @@ function Games({ username }) {
         <Table size={isMobile ? "small" : "medium"}>
           <TableHead>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Players</TableCell>
-              <TableCell>Winner</TableCell>
-              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Score</TableCell>
-              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>180s</TableCell>
-              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Added By</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Datum</TableCell>
+              <TableCell>Igrač 1</TableCell>
+              <TableCell>Rezultat</TableCell>
+              <TableCell>Igrač 2</TableCell>
+              <TableCell>Info</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {games.map((game) => (
-              <TableRow key={game.id || game.date}>
-                <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                  {new Date(game.date).toLocaleDateString()}
-                </TableCell>
-                <TableCell sx={{ 
-                  whiteSpace: 'nowrap',
-                  maxWidth: { xs: '100px', sm: '200px' },
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>
-                  {game.players.join(' vs ')}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap' }}>{game.winner}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                  {game.score}
-                </TableCell>
-                <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                  {game.players.map(player => 
-                    `${player}: ${game.oneEighties[player] || 0}`
-                  ).join(', ')}
-                </TableCell>
-                <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                  {game.addedBy}
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+            {games.map((game, idx) => {
+              const [player1, player2] = game.players;
+              let [score1, score2] = (game.score || '').split('-').map(s => s.trim());
+              const n1 = parseInt(score1, 10);
+              const n2 = parseInt(score2, 10);
+              let scoreColor1 = '#1976d2', scoreColor2 = '#1976d2';
+              if (!isNaN(n1) && !isNaN(n2) && n1 !== n2) {
+                if (n1 > n2) {
+                  scoreColor1 = 'green';
+                  scoreColor2 = 'red';
+                } else if (n2 > n1) {
+                  scoreColor1 = 'red';
+                  scoreColor2 = 'green';
+                }
+              }
+              const isOdd = idx % 2 === 1;
+              return (
+                <TableRow key={game.id || game.date} sx={{ backgroundColor: isOdd ? '#e9e260' : '#fafbaa' }}>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{new Date(game.date).toLocaleDateString()}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{player1}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 600 }}>
+                    <span style={{ color: scoreColor1 }}>{score1}</span>
+                    {' - '}
+                    <span style={{ color: scoreColor2 }}>{score2}</span>
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{player2}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => setSelectedGame(game)} size={isMobile ? 'small' : 'medium'}>
+                      <InfoIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+                    </IconButton>
                     {game.addedBy === username && (
                       <IconButton 
                         onClick={() => handleEdit(game)}
@@ -154,39 +156,24 @@ function Games({ username }) {
                         <EditIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
                       </IconButton>
                     )}
-                    {isMobile && (
-                      <IconButton
-                        onClick={() => setSelectedGame(game)}
-                        size="small"
-                        sx={{ p: 0.5 }}
-                      >
-                        <InfoIcon sx={{ fontSize: '1.2rem' }} />
-                      </IconButton>
-                    )}
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* Mobile Info Dialog */}
+      {/* Info Dialog */}
       <Dialog open={Boolean(selectedGame)} onClose={handleGameInfoClose}>
-        <DialogTitle>Game Details</DialogTitle>
+        <DialogTitle>Detalji meča</DialogTitle>
         <DialogContent>
           <Box sx={{ py: 1 }}>
-            <Typography><strong>Score:</strong> {selectedGame?.score}</Typography>
-            <Typography><strong>180s:</strong> {
-              selectedGame?.players.map(player => 
-                `${player}: ${selectedGame.oneEighties[player] || 0}`
-              ).join(', ')
-            }</Typography>
-            <Typography><strong>Added By:</strong> {selectedGame?.addedBy}</Typography>
+            <Typography><strong>Upisao:</strong> {selectedGame?.addedBy}</Typography>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleGameInfoClose}>Close</Button>
+          <Button onClick={handleGameInfoClose}>Zatvori</Button>
         </DialogActions>
       </Dialog>
     </div>

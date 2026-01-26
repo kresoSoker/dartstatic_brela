@@ -27,17 +27,13 @@ function AddGame({ username }) {
     editGame ? {
       player1: editGame.players[0],
       player2: editGame.players[1],
-      winner: editGame.winner,
-      score: editGame.score,
-      player1OneEighties: editGame.oneEighties[editGame.players[0]] || '0',
-      player2OneEighties: editGame.oneEighties[editGame.players[1]] || '0'
+      player1Score: editGame.score ? editGame.score.split('-')[0].trim() : '',
+      player2Score: editGame.score ? editGame.score.split('-')[1].trim() : ''
     } : {
       player1: '',
       player2: '',
-      winner: '',
-      score: '',
-      player1OneEighties: '0',
-      player2OneEighties: '0'
+      player1Score: '',
+      player2Score: ''
     }
   );
 
@@ -61,20 +57,36 @@ function AddGame({ username }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const p1 = gameData.player1;
+      const p2 = gameData.player2;
+      const s1 = parseInt(gameData.player1Score, 10);
+      const s2 = parseInt(gameData.player2Score, 10);
+      if (!p1 || !p2 || isNaN(s1) || isNaN(s2)) {
+        alert('Please select both players and enter valid scores.');
+        return;
+      }
+      if (p1 === p2) {
+        alert('Players must be different.');
+        return;
+      }
+      let winner = '';
+      if (s1 > s2) winner = p1;
+      else if (s2 > s1) winner = p2;
+      else winner = ''; // Draws not allowed, or handle as needed
+      if (!winner) {
+        alert('Scores must not be equal. There must be a winner.');
+        return;
+      }
       const gamePayload = {
-        ...(editGame && { id: editGame.id }), // Preserve the original ID if editing
+        ...(editGame && { id: editGame.id }),
         date: editGame ? editGame.date : new Date().toISOString(),
         createdAt: editGame ? editGame.createdAt : new Date().toISOString(),
-        players: [gameData.player1, gameData.player2],
-        winner: gameData.winner,
-        score: gameData.score,
-        oneEighties: {
-          [gameData.player1]: parseInt(gameData.player1OneEighties) || 0,
-          [gameData.player2]: parseInt(gameData.player2OneEighties) || 0
-        },
+        players: [p1, p2],
+        winner,
+        score: `${s1}-${s2}`,
+        oneEighties: { [p1]: 0, [p2]: 0 },
         addedBy: editGame ? editGame.addedBy : username
       };
-
       if (editGame) {
         await api.updateGame(editGame.id, gamePayload);
       } else {
@@ -103,11 +115,6 @@ function AddGame({ username }) {
       stats[loser] = { wins: 0, losses: 0, oneEighties: 0 };
     }
     stats[loser].losses += 1;
-    
-    // Update 180s
-    if (game.oneEighties > 0) {
-      stats[game.winner].oneEighties += game.oneEighties;
-    }
 
     localStorage.setItem('playerStats', JSON.stringify(stats));
   };
@@ -116,7 +123,7 @@ function AddGame({ username }) {
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Paper sx={{ p: 4 }}>
         <Typography variant="h4" component="h2" gutterBottom>
-          {editGame ? 'Edit Game' : 'Add New Game'}
+          {editGame ? 'Izmjeni meć' : 'Dodaj meč'}
         </Typography>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -129,106 +136,76 @@ function AddGame({ username }) {
           </Box>
         ) : (
         <form onSubmit={handleSubmit}>
-          <FormControl fullWidth margin="normal" required>
-            <InputLabel>Player 1</InputLabel>
-            <Select
-              value={gameData.player1}
-              label="Player 1"
-              onChange={(e) => setGameData({ 
-                ...gameData, 
-                player1: e.target.value,
-                // Reset winner if it was player1
-                winner: gameData.winner === gameData.player1 ? '' : gameData.winner
-              })}
-            >
-              {players.map((player) => (
-                <MenuItem 
-                  key={player} 
-                  value={player}
-                  disabled={player === gameData.player2} // Prevent selecting same player
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
+              <FormControl sx={{ flex: 2 }} margin="normal" required>
+                <InputLabel>Igrač 1</InputLabel>
+                <Select
+                  value={gameData.player1}
+                  label="Igrač 1"
+                  onChange={(e) => setGameData({ ...gameData, player1: e.target.value })}
                 >
-                  {player}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth margin="normal" required>
-            <InputLabel>Player 2</InputLabel>
-            <Select
-              value={gameData.player2}
-              label="Player 2"
-              onChange={(e) => setGameData({ 
-                ...gameData, 
-                player2: e.target.value,
-                // Reset winner if it was player2
-                winner: gameData.winner === gameData.player2 ? '' : gameData.winner
-              })}
-            >
-              {players.map((player) => (
-                <MenuItem 
-                  key={player} 
-                  value={player}
-                  disabled={player === gameData.player1} // Prevent selecting same player
+                  {players.map((player) => (
+                    <MenuItem 
+                      key={player} 
+                      value={player}
+                      disabled={player === gameData.player2}
+                    >
+                      {player}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                sx={{ flex: 1, minWidth: 80 }}
+                label="Rezultat igrača 1"
+                type="number"
+                value={gameData.player1Score}
+                onChange={(e) => setGameData({ ...gameData, player1Score: e.target.value })}
+                margin="normal"
+                required
+                inputProps={{ min: 0 }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
+              <FormControl sx={{ flex: 2 }} margin="normal" required>
+                <InputLabel>Igrač 2</InputLabel>
+                <Select
+                  value={gameData.player2}
+                  label="Igrač 2"
+                  onChange={(e) => setGameData({ ...gameData, player2: e.target.value })}
                 >
-                  {player}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth margin="normal" required>
-            <InputLabel>Winner</InputLabel>
-            <Select
-              value={gameData.winner}
-              onChange={(e) => setGameData({ ...gameData, winner: e.target.value })}
-              label="Winner"
+                  {players.map((player) => (
+                    <MenuItem 
+                      key={player} 
+                      value={player}
+                      disabled={player === gameData.player1}
+                    >
+                      {player}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                sx={{ flex: 1, minWidth: 80 }}
+                label="Rezultat igrača 2"
+                type="number"
+                value={gameData.player2Score}
+                onChange={(e) => setGameData({ ...gameData, player2Score: e.target.value })}
+                margin="normal"
+                required
+                inputProps={{ min: 0 }}
+              />
+            </Box>
+            <Button
+              fullWidth
+              variant="contained"
+              type="submit"
+              sx={{ mt: 2 }}
             >
-              {gameData.player1 && (
-                <MenuItem value={gameData.player1}>{gameData.player1}</MenuItem>
-              )}
-              {gameData.player2 && (
-                <MenuItem value={gameData.player2}>{gameData.player2}</MenuItem>
-              )}
-            </Select>
-          </FormControl>
-          <TextField
-            fullWidth
-            label="Score"
-            value={gameData.score}
-            onChange={(e) => setGameData({ ...gameData, score: e.target.value })}
-            margin="normal"
-            required
-            placeholder="e.g., 3-2"
-          />
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <TextField
-              fullWidth
-              label={`${gameData.player1}'s 180s`}
-              type="number"
-              value={gameData.player1OneEighties}
-              onChange={(e) => setGameData({ ...gameData, player1OneEighties: e.target.value })}
-              margin="normal"
-              inputProps={{ min: 0 }}
-              disabled={!gameData.player1}
-            />
-            <TextField
-              fullWidth
-              label={`${gameData.player2}'s 180s`}
-              type="number"
-              value={gameData.player2OneEighties}
-              onChange={(e) => setGameData({ ...gameData, player2OneEighties: e.target.value })}
-              margin="normal"
-              inputProps={{ min: 0 }}
-              disabled={!gameData.player2}
-            />
+              {editGame ? 'Spremi meć' : 'Spremi meč'}
+            </Button>
           </Box>
-          <Button
-            fullWidth
-            variant="contained"
-            type="submit"
-            sx={{ mt: 2 }}
-          >
-            {editGame ? 'Save Changes' : 'Add Game'}
-          </Button>
         </form>
         )}
       </Paper>
