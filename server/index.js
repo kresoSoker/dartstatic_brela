@@ -125,7 +125,9 @@ app.get('/api/players', async (req, res) => {
             'ante.c',
             'dalibor.m',
             'kruno.u',
-            'danijel.m'
+            'danijel.m',
+            'nikola.z',
+            'Josip'
         ].sort();
         
         console.log('Sending players list:', allowedPlayers);

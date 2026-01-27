@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { useState } from 'react';
+import version from '../../version.json';
 
 function Navigation({ username, onLogout }) {
   const navigate = useNavigate();
@@ -71,6 +72,18 @@ function Navigation({ username, onLogout }) {
         >
           Dobrodošao {username}
         </Typography>
+        {!isMobile && (
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              mr: 2, 
+              color: 'rgba(255,255,255,0.7)', 
+              fontSize: '0.75rem' 
+            }}
+          >
+            v{version.version}
+          </Typography>
+        )}
 
         {isMobile ? (
           <>

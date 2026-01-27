@@ -75,24 +75,26 @@ function Games({ username }) {
         >
           Povijest mečeva
         </Typography>
-        <Button 
-          variant="outlined" 
-          color="error"
-          size={isMobile ? "small" : "medium"}
-          onClick={async () => {
-            if (window.confirm('Are you sure you want to delete all games? This cannot be undone.')) {
-              try {
-                const result = await api.resetData();
-                setGames([]);
-                setError(null);
-              } catch (error) {
-                setError('Failed to reset data: ' + (error.response?.data?.error || error.message));
+        {username === 'kresimir.b' && (
+          <Button 
+            variant="outlined" 
+            color="error"
+            size={isMobile ? "small" : "medium"}
+            onClick={async () => {
+              if (window.confirm('Are you sure you want to delete all games? This cannot be undone.')) {
+                try {
+                  const result = await api.resetData();
+                  setGames([]);
+                  setError(null);
+                } catch (error) {
+                  setError('Failed to reset data: ' + (error.response?.data?.error || error.message));
+                }
               }
-            }
-          }}
-        >
-          Reset All Data
-        </Button>
+            }}
+          >
+            Reset All Data
+          </Button>
+        )}
       </Box>
 
       <TableContainer 
@@ -147,7 +149,7 @@ function Games({ username }) {
                     <IconButton onClick={() => setSelectedGame(game)} size={isMobile ? 'small' : 'medium'}>
                       <InfoIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
                     </IconButton>
-                    {game.addedBy === username && (
+                    {username === 'kresimir.b' && (
                       <IconButton 
                         onClick={() => handleEdit(game)}
                         size={isMobile ? "small" : "medium"}

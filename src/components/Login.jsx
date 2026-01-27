@@ -1,28 +1,36 @@
 import { useState } from 'react';
 import { TextField, Button, Box, Typography, Paper, Alert, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import logo from '../assets/logo.png';
+import version from '../../version.json';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const allowedUsers = [
-    'kresimir.b',
-    'karlo.m',
-    'marino.j',
-    'frane.g',
-    'ante.c',
-    'dalibor.m',
-    'kruno.u',
-    'danijel.m'
-  ];
+  const allowedUsers = {
+    'kresimir.b': 'kreso261010',
+    'karlo.m': 'km3698',
+    'marino.j': 'mj2558',
+    'frane.g': 'fg9663',
+    'ante.c': 'ac0899',
+    'dalibor.m': 'dm1123',
+    'kruno.u': 'ku6589',
+    'danijel.m': 'dm7896',
+    'nikola.z': 'nz8855',
+    'Josip': 'jj9990'
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     
-    if (username) {
-      onLogin(username);
+    if (username && password) {
+      if (allowedUsers[username] === password) {
+        onLogin(username);
+      } else {
+        setError('Invalid username or password');
+      }
     }
   };
 
@@ -80,31 +88,52 @@ function Login({ onLogin }) {
         <Typography variant="h4" component="h1" gutterBottom textAlign="center" sx={{ fontWeight: 600, color: '#111301' }}>
           Dart Statistics
         </Typography>
-        <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        <form onSubmit={handleSubmit} autoComplete="on">
           <FormControl fullWidth margin="normal" required>
             <InputLabel>Select your username</InputLabel>
             <Select
               value={username}
               label="Select your username"
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
             >
-              {allowedUsers.map((user) => (
+              {Object.keys(allowedUsers).map((user) => (
                 <MenuItem key={user} value={user}>
                   {user}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+          <TextField
+            fullWidth
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            margin="normal"
+            required
+            autoComplete="current-password"
+            inputProps={{
+              name: 'password'
+            }}
+          />
           <Button
             fullWidth
             variant="contained"
             type="submit"
             sx={{ mt: 2 }}
-            disabled={!username.trim()}
           >
             Enter
           </Button>
         </form>
+        <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 2, color: '#666' }}>
+          v{version.version}
+        </Typography>
       </Paper>
     </Box>
   );
