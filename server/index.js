@@ -148,6 +148,18 @@ app.get('/api/players', async (req, res) => {
     }
 });
 
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+    try {
+        // Simple database ping to keep connection alive
+        await db.pool.query('SELECT 1');
+        res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(503).json({ status: 'error', error: error.message });
+    }
+});
+
 // Initialize data file and start server
 db.initializeDatabase().then(() => {
     app.listen(PORT, () => {

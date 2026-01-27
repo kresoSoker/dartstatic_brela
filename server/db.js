@@ -1,9 +1,13 @@
 const { Pool } = require('pg');
 
-// Create a connection pool
+// Create a connection pool with timeout settings
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    connectionTimeoutMillis: 10000, // 10 seconds to establish connection
+    idleTimeoutMillis: 30000, // 30 seconds before closing idle connection
+    max: 10, // maximum pool size
+    statement_timeout: 30000, // 30 seconds query timeout
 });
 
 // Initialize database tables

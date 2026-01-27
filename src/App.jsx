@@ -29,6 +29,24 @@ function App() {
     }
   }, [username])
 
+  // Keep server alive with periodic health checks
+  useEffect(() => {
+    if (!username) return;
+
+    const keepAlive = () => {
+      fetch('https://dartstatic-brela-backend.onrender.com/api/health')
+        .catch(() => {}); // Silently fail
+    };
+
+    // Ping every 10 minutes to keep server awake
+    const interval = setInterval(keepAlive, 10 * 60 * 1000);
+    
+    // Initial ping
+    keepAlive();
+
+    return () => clearInterval(interval);
+  }, [username]);
+
   const [initialLoading, setInitialLoading] = useState(false);
 
   useEffect(() => {
