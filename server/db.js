@@ -24,7 +24,6 @@ async function initializeDatabase() {
                 players TEXT[] NOT NULL,
                 winner VARCHAR(255) NOT NULL,
                 score VARCHAR(50) NOT NULL,
-                one_eighties JSONB NOT NULL,
                 added_by VARCHAR(255) NOT NULL
             )
         `);
@@ -34,8 +33,7 @@ async function initializeDatabase() {
             CREATE TABLE IF NOT EXISTS stats (
                 player VARCHAR(255) PRIMARY KEY,
                 wins INTEGER DEFAULT 0,
-                losses INTEGER DEFAULT 0,
-                one_eighties INTEGER DEFAULT 0
+                losses INTEGER DEFAULT 0
             )
         `);
 
@@ -59,7 +57,6 @@ async function getAllGames() {
         players: row.players,
         winner: row.winner,
         score: row.score,
-        oneEighties: row.one_eighties,
         addedBy: row.added_by
     }));
 }
@@ -72,8 +69,8 @@ async function addGame(game) {
 
         // Insert the game
         const insertGameQuery = `
-            INSERT INTO games (id, date, created_at, players, winner, score, one_eighties, added_by)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO games (id, date, created_at, players, winner, score, added_by)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         `;
         const gameValues = [
@@ -83,7 +80,6 @@ async function addGame(game) {
             game.players,
             game.winner,
             game.score,
-            JSON.stringify(game.oneEighties),
             game.addedBy
         ];
         const gameResult = await client.query(insertGameQuery, gameValues);
@@ -94,32 +90,30 @@ async function addGame(game) {
 
         // Ensure stats exist for both players
         await client.query(`
-            INSERT INTO stats (player, wins, losses, one_eighties)
-            VALUES ($1, 0, 0, 0)
+            INSERT INTO stats (player, wins, losses)
+            VALUES ($1, 0, 0)
             ON CONFLICT (player) DO NOTHING
         `, [winner]);
 
         await client.query(`
-            INSERT INTO stats (player, wins, losses, one_eighties)
-            VALUES ($1, 0, 0, 0)
+            INSERT INTO stats (player, wins, losses)
+            VALUES ($1, 0, 0)
             ON CONFLICT (player) DO NOTHING
         `, [loser]);
 
         // Update winner stats
         await client.query(`
             UPDATE stats
-            SET wins = wins + 1,
-                one_eighties = one_eighties + $1
-            WHERE player = $2
-        `, [game.oneEighties[winner] || 0, winner]);
+            SET wins = wins + 1
+            WHERE player = $1
+        `, [winner]);
 
         // Update loser stats
         await client.query(`
             UPDATE stats
-            SET losses = losses + 1,
-                one_eighties = one_eighties + $1
-            WHERE player = $2
-        `, [game.oneEighties[loser] || 0, loser]);
+            SET losses = losses + 1
+            WHERE player = $1
+        `, [loser]);
 
         await client.query('COMMIT');
 
@@ -130,7 +124,6 @@ async function addGame(game) {
             players: gameResult.rows[0].players,
             winner: gameResult.rows[0].winner,
             score: gameResult.rows[0].score,
-            oneEighties: gameResult.rows[0].one_eighties,
             addedBy: gameResult.rows[0].added_by
         };
     } catch (error) {
@@ -160,17 +153,15 @@ async function updateGame(id, updatedGame) {
 
         await client.query(`
             UPDATE stats
-            SET wins = wins - 1,
-                one_eighties = one_eighties - $1
-            WHERE player = $2
-        `, [oldGame.one_eighties[oldWinner] || 0, oldWinner]);
+            SET wins = wins - 1
+            WHERE player = $1
+        `, [oldWinner]);
 
         await client.query(`
             UPDATE stats
-            SET losses = losses - 1,
-                one_eighties = one_eighties - $1
-            WHERE player = $2
-        `, [oldGame.one_eighties[oldLoser] || 0, oldLoser]);
+            SET losses = losses - 1
+            WHERE player = $1
+        `, [oldLoser]);
 
         // Update the game
         const updateGameQuery = `
@@ -179,9 +170,8 @@ async function updateGame(id, updatedGame) {
                 players = $2,
                 winner = $3,
                 score = $4,
-                one_eighties = $5,
-                last_modified = $6
-            WHERE id = $7
+                last_modified = $5
+            WHERE id = $6
             RETURNING *
         `;
         const gameValues = [
@@ -189,7 +179,6 @@ async function updateGame(id, updatedGame) {
             updatedGame.players,
             updatedGame.winner,
             updatedGame.score,
-            JSON.stringify(updatedGame.oneEighties),
             new Date().toISOString(),
             id
         ];
@@ -201,17 +190,15 @@ async function updateGame(id, updatedGame) {
 
         await client.query(`
             UPDATE stats
-            SET wins = wins + 1,
-                one_eighties = one_eighties + $1
-            WHERE player = $2
-        `, [updatedGame.oneEighties[newWinner] || 0, newWinner]);
+            SET wins = wins + 1
+            WHERE player = $1
+        `, [newWinner]);
 
         await client.query(`
             UPDATE stats
-            SET losses = losses + 1,
-                one_eighties = one_eighties + $1
-            WHERE player = $2
-        `, [updatedGame.oneEighties[newLoser] || 0, newLoser]);
+            SET losses = losses + 1
+            WHERE player = $1
+        `, [newLoser]);
 
         await client.query('COMMIT');
 
@@ -223,7 +210,6 @@ async function updateGame(id, updatedGame) {
             players: gameResult.rows[0].players,
             winner: gameResult.rows[0].winner,
             score: gameResult.rows[0].score,
-            oneEighties: gameResult.rows[0].one_eighties,
             addedBy: gameResult.rows[0].added_by
         };
     } catch (error) {
@@ -241,8 +227,7 @@ async function getAllStats() {
     result.rows.forEach(row => {
         stats[row.player] = {
             wins: row.wins,
-            losses: row.losses,
-            oneEighties: row.one_eighties
+            losses: row.losses
         };
     });
     return stats;

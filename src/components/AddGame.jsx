@@ -84,7 +84,6 @@ function AddGame({ username }) {
         players: [p1, p2],
         winner,
         score: `${s1}-${s2}`,
-        oneEighties: { [p1]: 0, [p2]: 0 },
         addedBy: editGame ? editGame.addedBy : username
       };
       if (editGame) {
